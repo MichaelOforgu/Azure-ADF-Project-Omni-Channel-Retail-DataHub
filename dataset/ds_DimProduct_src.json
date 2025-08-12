@@ -1,0 +1,62 @@
+{
+	"name": "ds_DimProduct_src",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_datalake",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "dataset_fashion_store_products.csv",
+				"folderPath": "omnichannel-onprem",
+				"fileSystem": "bronze"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "product_id",
+				"type": "String"
+			},
+			{
+				"name": "product_name",
+				"type": "String"
+			},
+			{
+				"name": "category",
+				"type": "String"
+			},
+			{
+				"name": "brand",
+				"type": "String"
+			},
+			{
+				"name": "color",
+				"type": "String"
+			},
+			{
+				"name": "size",
+				"type": "String"
+			},
+			{
+				"name": "catalog_price",
+				"type": "String"
+			},
+			{
+				"name": "cost_price",
+				"type": "String"
+			},
+			{
+				"name": "gender",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

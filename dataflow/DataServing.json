@@ -1,0 +1,158 @@
+{
+	"name": "DataServing",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "DimSalesItem"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "DimProduct"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "FactSales"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkGold"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SalesItemJoin"
+				},
+				{
+					"name": "aggregateTotalSalesbyProduct"
+				},
+				{
+					"name": "ProductJoin"
+				},
+				{
+					"name": "castproductid"
+				},
+				{
+					"name": "Ranking"
+				},
+				{
+					"name": "Top5"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          item_id as short,",
+				"          sale_id as short,",
+				"          product_id as short,",
+				"          quantity as short,",
+				"          original_price as double,",
+				"          unit_price as double,",
+				"          discount_applied as double,",
+				"          discount_pct as string,",
+				"          discounted as boolean,",
+				"          item_total as double,",
+				"          sale_date as date,",
+				"          channel as string,",
+				"          channel_campaigns as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'DimSalesItem') ~> DimSalesItem",
+				"source(output(",
+				"          product_id as string,",
+				"          product_name as string,",
+				"          category as string,",
+				"          brand as string,",
+				"          color as string,",
+				"          size as string,",
+				"          catalog_price as string,",
+				"          cost_price as string,",
+				"          gender as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'DimProduct') ~> DimProduct",
+				"source(output(",
+				"          sale_id as integer,",
+				"          channel as string,",
+				"          discounted as integer,",
+				"          total_amount as integer,",
+				"          sale_date as date,",
+				"          customer_id as integer,",
+				"          country as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'FactSales') ~> FactSales",
+				"FactSales, DimSalesItem join(FactSales@sale_id == DimSalesItem@sale_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> SalesItemJoin",
+				"ProductJoin aggregate(groupBy(product_name),",
+				"     Total_Sales = sum(total_amount)) ~> aggregateTotalSalesbyProduct",
+				"SalesItemJoin, castproductid join(DimSalesItem@product_id == castproductid@product_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> ProductJoin",
+				"DimProduct cast(output(",
+				"          product_id as short",
+				"     ),",
+				"     errors: true) ~> castproductid",
+				"aggregateTotalSalesbyProduct window(desc(Total_Sales, true),",
+				"     Ranking = denseRank()) ~> Ranking",
+				"Ranking filter(Ranking < 6) ~> Top5",
+				"Top5 alterRow(upsertIf(1==1)) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'gold',",
+				"     folderPath: 'businessView',",
+				"     overwrite: true,",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     upsertable: true,",
+				"     keys:['product_name'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkGold"
+			]
+		}
+	}
+}

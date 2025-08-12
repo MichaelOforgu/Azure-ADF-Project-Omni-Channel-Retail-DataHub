@@ -1,0 +1,6 @@
+{
+	"name": "Mc-SelfHosted",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

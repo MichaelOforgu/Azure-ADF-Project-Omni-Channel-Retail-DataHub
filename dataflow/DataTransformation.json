@@ -1,0 +1,406 @@
+{
+	"name": "DataTransformation",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_DimChannel_src",
+						"type": "DatasetReference"
+					},
+					"name": "DimCampaign"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimChannel_src",
+						"type": "DatasetReference"
+					},
+					"name": "DimChannel"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimCustomer_src",
+						"type": "DatasetReference"
+					},
+					"name": "DimCustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimProduct_src",
+						"type": "DatasetReference"
+					},
+					"name": "DimProduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_SalesItem_src",
+						"type": "DatasetReference"
+					},
+					"name": "DimSalesItem"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DimStock_src",
+						"type": "DatasetReference"
+					},
+					"name": "DimStock"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_FactSales_src",
+						"type": "DatasetReference"
+					},
+					"name": "FactSales"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink3"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink4"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink5"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink6"
+				},
+				{
+					"linkedService": {
+						"referenceName": "ls_datalake",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sink7"
+				}
+			],
+			"transformations": [
+				{
+					"name": "casttotalamountINT"
+				},
+				{
+					"name": "derivedcountryUpper"
+				},
+				{
+					"name": "castdiscountedValue"
+				},
+				{
+					"name": "deriveddiscountpercent"
+				},
+				{
+					"name": "derivedproductname"
+				},
+				{
+					"name": "renamediscountpct"
+				},
+				{
+					"name": "derivedcountryUpp"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "alterRow2"
+				},
+				{
+					"name": "alterRow3"
+				},
+				{
+					"name": "alterRow4"
+				},
+				{
+					"name": "alterRow5"
+				},
+				{
+					"name": "alterRow6"
+				},
+				{
+					"name": "alterRow7"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          campaign_id as short,",
+				"          campaign_name as string,",
+				"          start_date as date,",
+				"          end_date as date,",
+				"          channel as string,",
+				"          discount_type as string,",
+				"          discount_value as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DimCampaign",
+				"source(output(",
+				"          channel as string,",
+				"          description as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DimChannel",
+				"source(output(",
+				"          customer_id as short,",
+				"          country as string,",
+				"          age_range as string,",
+				"          signup_date as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DimCustomer",
+				"source(output(",
+				"          product_id as string,",
+				"          product_name as string,",
+				"          category as string,",
+				"          brand as string,",
+				"          color as string,",
+				"          size as string,",
+				"          catalog_price as string,",
+				"          cost_price as string,",
+				"          gender as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DimProduct",
+				"source(output(",
+				"          item_id as short,",
+				"          sale_id as short,",
+				"          product_id as short,",
+				"          quantity as short,",
+				"          original_price as double,",
+				"          unit_price as double,",
+				"          discount_applied as double,",
+				"          discount_percent as string,",
+				"          discounted as boolean,",
+				"          item_total as double,",
+				"          sale_date as date,",
+				"          channel as string,",
+				"          channel_campaigns as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DimSalesItem",
+				"source(output(",
+				"          country as string,",
+				"          product_id as short,",
+				"          stock_quantity as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DimStock",
+				"source(output(",
+				"          sale_id as integer,",
+				"          channel as string,",
+				"          discounted as integer,",
+				"          total_amount as decimal(10,2),",
+				"          sale_date as date,",
+				"          customer_id as integer,",
+				"          country as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> FactSales",
+				"FactSales cast(output(",
+				"          total_amount as integer",
+				"     ),",
+				"     errors: true) ~> casttotalamountINT",
+				"DimCustomer derive(country = upper(country)) ~> derivedcountryUpper",
+				"deriveddiscountpercent cast(output(",
+				"          discount_value as integer",
+				"     ),",
+				"     errors: true) ~> castdiscountedValue",
+				"DimCampaign derive(discount_value = regexReplace(discount_value, \"%\", ' ')) ~> deriveddiscountpercent",
+				"DimProduct derive(product_name = upper(product_name)) ~> derivedproductname",
+				"DimSalesItem select(mapColumn(",
+				"          item_id,",
+				"          sale_id,",
+				"          product_id,",
+				"          quantity,",
+				"          original_price,",
+				"          unit_price,",
+				"          discount_applied,",
+				"          discount_pct = discount_percent,",
+				"          discounted,",
+				"          item_total,",
+				"          sale_date,",
+				"          channel,",
+				"          channel_campaigns",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> renamediscountpct",
+				"DimStock derive(country = upper(country)) ~> derivedcountryUpp",
+				"castdiscountedValue alterRow(upsertIf(1==1)) ~> alterRow1",
+				"DimChannel alterRow(upsertIf(1==1)) ~> alterRow2",
+				"derivedcountryUpper alterRow(upsertIf(1==1)) ~> alterRow3",
+				"derivedproductname alterRow(upsertIf(1==1)) ~> alterRow4",
+				"renamediscountpct alterRow(upsertIf(1==1)) ~> alterRow5",
+				"derivedcountryUpp alterRow(upsertIf(1==1)) ~> alterRow6",
+				"casttotalamountINT alterRow(upsertIf(1==1)) ~> alterRow7",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'DimCampaign',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     upsertable: true,",
+				"     keys:['campaign_id'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"alterRow2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'DimChannel',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     upsertable: true,",
+				"     keys:['channel'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2",
+				"alterRow3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'DimCustomer',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     upsertable: true,",
+				"     keys:['customer_id'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink3",
+				"alterRow7 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'FactSales',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     upsertable: true,",
+				"     keys:['sale_id'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink4",
+				"alterRow6 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'DimStock',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     upsertable: true,",
+				"     keys:['product_id'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink5",
+				"alterRow5 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'DimSalesItem',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     upsertable: true,",
+				"     keys:['item_id'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink6",
+				"alterRow4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'DimProduct',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     upsertable: true,",
+				"     keys:['product_id'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink7"
+			]
+		}
+	}
+}

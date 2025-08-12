@@ -1,0 +1,17 @@
+{
+	"name": "ls_onprem",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "C:\\McAzureFiles\\Omni-Channel",
+			"userId": "chukwuka.oforgu@outlook.com",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI3MTgxZjQ3Ny1jYjJlLTQyYWItODM2Yi05ZTcyNWI4ZDY0ZTQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "Mc-SelfHosted",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

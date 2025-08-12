@@ -1,0 +1,122 @@
+{
+	"name": "OnPrem_Ingestion",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.files",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy_OnPrem",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "FileServerReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_onprem",
+									"type": "DatasetReference",
+									"parameters": {
+										"p_filename": {
+											"value": "@item().file_name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_onprem_sink",
+									"type": "DatasetReference",
+									"parameters": {
+										"p_filename": {
+											"value": "@item().file_name",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"files": {
+				"type": "array",
+				"defaultValue": [
+					{
+						"file_name": "dataset_fashion_store_campaigns.csv"
+					},
+					{
+						"file_name": "dataset_fashion_store_channels.csv"
+					},
+					{
+						"file_name": "dataset_fashion_store_customers.csv"
+					},
+					{
+						"file_name": "dataset_fashion_store_products.csv"
+					},
+					{
+						"file_name": "dataset_fashion_store_sales.csv"
+					},
+					{
+						"file_name": "dataset_fashion_store_salesitems.csv"
+					},
+					{
+						"file_name": "dataset_fashion_store_stock.csv"
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-08-11T19:14:15Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
